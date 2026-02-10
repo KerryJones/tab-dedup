@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tab Dedup Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tab Dedup Settings</h1>
+
+    <section>
+      <h2>Domain Aliases</h2>
+      <p class="description">Map domains that redirect to their canonical form. For example, <code>gmail.com</code> redirects to <code>mail.google.com</code>.</p>
+      <textarea id="domainAliases" rows="8" placeholder="gmail.com = mail.google.com&#10;example.com = www.example.org"></textarea>
+      <p class="hint">Format: <code>source = destination</code> (one per line)</p>
+    </section>
+
+    <section>
+      <h2>Disallow List</h2>
+      <p class="description">Domains that should never trigger the tab chooser (always allow new tabs).</p>
+      <textarea id="disallowDomains" rows="8" placeholder="google.com&#10;bing.com"></textarea>
+      <p class="hint">Format: one domain per line</p>
+    </section>
+
+    <div class="actions">
+      <button id="save">Save Settings</button>
+      <button id="reset">Reset to Defaults</button>
+      <span id="status"></span>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

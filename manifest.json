@@ -3,9 +3,13 @@
   "name": "Tab Dedup",
   "version": "1.0",
   "description": "Intercepts duplicate tab navigations and offers to switch to existing tabs instead.",
-  "permissions": ["tabs", "webNavigation"],
+  "permissions": ["tabs", "webNavigation", "storage"],
   "background": {
     "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "web_accessible_resources": [
     {

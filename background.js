@@ -1,9 +1,45 @@
 const allowedTabs = new Set();
 const newTabs = new Set();
 
-function normalizeDomain(hostname) {
-  return hostname.replace(/^www\./, "").toLowerCase();
+// Configuration loaded from storage
+let config = {
+  domainAliases: {},
+  disallowDomains: []
+};
+
+// Load configuration from storage
+async function loadConfig() {
+  const DEFAULT_CONFIG = {
+    domainAliases: {
+      'gmail.com': 'mail.google.com'
+    },
+    disallowDomains: ['google.com']
+  };
+
+  const result = await chrome.storage.sync.get(DEFAULT_CONFIG);
+  config = result;
+  console.log('[Tab Dedup] Config loaded:', config);
 }
+
+// Listen for config changes
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'sync') {
+    loadConfig();
+  }
+});
+
+function normalizeDomain(hostname) {
+  let normalized = hostname.replace(/^www\./, "").toLowerCase();
+  // Apply domain aliases from config
+  const canonical = config.domainAliases[normalized] || normalized;
+  if (canonical !== normalized) {
+    console.log('[Tab Dedup] Domain alias:', normalized, '→', canonical);
+  }
+  return canonical;
+}
+
+// Initialize config on startup
+loadConfig();
 
 // Track newly created tabs
 chrome.tabs.onCreated.addListener((tab) => {
@@ -56,6 +92,13 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
     const targetDomain = normalizeDomain(targetUrl.hostname);
     console.log('[Tab Dedup] Target domain:', targetDomain);
+
+    // Check if domain is in disallow list
+    if (config.disallowDomains.includes(targetDomain)) {
+      console.log('[Tab Dedup] Domain in disallow list, allowing navigation');
+      newTabs.delete(tabId);
+      return;
+    }
 
     const allTabs = await chrome.tabs.query({});
     const matches = allTabs.filter((t) => {
