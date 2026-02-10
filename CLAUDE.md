@@ -2,6 +2,8 @@
 
 This file provides context and guidelines for AI assistants (like Claude) working on the Tab Dedup Chrome extension.
 
+> **Note for human developers**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, guidelines, and contribution workflow.
+
 ## Project Overview
 
 Tab Dedup is a Chrome extension that automatically detects duplicate tabs and offers users a choice to switch to existing tabs instead of opening duplicates. It's built with Manifest V3 and emphasizes simplicity, privacy, and keyboard-driven UX.
