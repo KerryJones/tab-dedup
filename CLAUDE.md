@@ -29,7 +29,13 @@ tab-dedup/
 │   ├── chooser.html
 │   ├── chooser.css
 │   └── chooser.js
-└── icons/                 # Extension icons (user-provided)
+├── icons/                 # Extension icons (16, 48, 128 px)
+├── Makefile               # Build automation (use 'make package' to build)
+├── LICENSE                # GPL v3 license
+├── README.md              # User documentation
+├── PRIVACY.md             # Privacy policy (linked from Web Store)
+├── PUBLISHING.md          # Chrome Web Store submission guide
+└── CLAUDE.md              # This file - AI development guide
 ```
 
 ### Key Components
@@ -72,6 +78,7 @@ Stored in `chrome.storage.sync`:
 
 ### DO:
 - ✅ Test changes with extension loaded unpacked in Chrome
+- ✅ Use `make package` to create Web Store packages (validates automatically)
 - ✅ Keep debug mode OFF by default (production mode)
 - ✅ Add `if (config.debugMode)` checks before `console.log`
 - ✅ Keep `console.error` statements always active (for bug reports)
@@ -82,7 +89,7 @@ Stored in `chrome.storage.sync`:
 - ✅ Test keyboard navigation in chooser UI
 
 ### DON'T:
-- ❌ Add build tools, bundlers, or frameworks unless absolutely necessary
+- ❌ Add build tools (webpack, bundlers, transpilers) - keep code vanilla JS
 - ❌ Add features beyond core tab deduplication
 - ❌ Add telemetry, analytics, or external API calls
 - ❌ Add dependencies or npm packages without strong justification
@@ -90,6 +97,8 @@ Stored in `chrome.storage.sync`:
 - ❌ Add opinionated default configuration (keep defaults empty)
 - ❌ Skip input validation on settings page
 - ❌ Make breaking changes without updating version number
+
+**Note**: The Makefile is build *automation* (packaging/validation), not a build *tool* (transpilation/bundling). It's fine to use.
 
 ## Code Patterns
 

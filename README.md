@@ -141,7 +141,12 @@ tab-dedup/
 │   ├── chooser.html       # Tab chooser UI
 │   ├── chooser.css        # Tab chooser styles
 │   └── chooser.js         # Tab chooser logic
-└── icons/                 # Extension icons (not included)
+├── icons/                 # Extension icons (16, 48, 128 px)
+├── Makefile               # Build automation (packaging, validation)
+├── LICENSE                # GPL v3 license
+├── README.md              # This file
+├── PRIVACY.md             # Privacy policy
+└── CLAUDE.md              # AI development guide
 ```
 
 ### Architecture
