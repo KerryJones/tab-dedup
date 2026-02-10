@@ -6,6 +6,8 @@ This file provides context and guidelines for AI assistants (like Claude) workin
 
 Tab Dedup is a Chrome extension that automatically detects duplicate tabs and offers users a choice to switch to existing tabs instead of opening duplicates. It's built with Manifest V3 and emphasizes simplicity, privacy, and keyboard-driven UX.
 
+**License**: GNU General Public License v3.0 (GPL v3) - ensures the extension remains open source and privacy-respecting forever.
+
 ## Core Principles
 
 1. **Simplicity First**: This is a single-purpose extension. Don't add features that aren't directly related to tab deduplication.
@@ -209,15 +211,29 @@ Update `manifest.json` version before publishing updates.
 # 2. Enable Developer Mode
 # 3. Click "Load unpacked"
 # 4. Select the tab-dedup directory
+#
+# Or use: make install (shows instructions)
 
 # View console logs (when debug mode enabled)
 # 1. Background: chrome://extensions/ → Tab Dedup → "Inspect views: service worker"
 # 2. Chooser: F12 on the chooser page
 # 3. Options: F12 on the options page
 
-# Package for Chrome Web Store
+# Package for Chrome Web Store (recommended)
+make package
+
+# Or manually (if Make not available)
 cd /Users/kerryjones/code/tab-dedup
-zip -r tab-dedup-v1.0.0.zip . -x "*.git*" "*.DS_Store" "PUBLISHING.md" "CLAUDE.md" "*.zip"
+zip -r tab-dedup-v1.0.0.zip . \
+  -x "*.git*" "*.DS_Store" "Makefile" \
+  -x "PUBLISHING.md" "CLAUDE.md" "PRIVACY.md" \
+  -x "screenshots/*" "icons/ICON_REQUIREMENTS.md" "*.zip"
+
+# Other useful Make commands
+make help      # Show all available commands
+make validate  # Validate manifest and check icons
+make clean     # Remove build artifacts
+make version   # Show current version
 ```
 
 ## Project Status

@@ -2,6 +2,18 @@
 
 Automatically detects duplicate tabs and offers to switch to existing tabs instead of opening duplicates. Helps reduce tab clutter and memory usage.
 
+## Screenshots
+
+### Tab Chooser
+![Tab Chooser Interface](screenshots/tab-ui-selector.png)
+
+When you navigate to a URL that's already open, Tab Dedup shows you all matching tabs and lets you choose.
+
+### Settings
+![Settings Page](screenshots/tab-dedup-settings.png)
+
+Configure domain aliases, disallow list, and debug mode.
+
 ## Features
 
 - **Automatic Detection**: Intercepts new tab navigations and checks for existing tabs with the same domain
@@ -112,6 +124,8 @@ Tab Dedup respects your privacy:
 
 The only data stored is your configuration settings (domain aliases, disallow list, debug mode), which are synced via Chrome's built-in sync mechanism if you're signed into Chrome.
 
+**Full privacy policy**: See [PRIVACY.md](PRIVACY.md) for complete details.
+
 ## Development
 
 ### Project Structure
@@ -140,11 +154,27 @@ tab-dedup/
 
 ### Building/Testing
 
+**Development workflow:**
 1. Make changes to source files
 2. Go to `chrome://extensions/`
 3. Click the refresh icon on the Tab Dedup extension card
 4. Test your changes by opening new tabs
 5. Check console logs (F12) if debug mode is enabled
+
+**Useful Make commands:**
+```bash
+make validate  # Validate manifest.json and check icons
+make package   # Create Chrome Web Store package
+make clean     # Remove build artifacts
+make help      # Show all available commands
+```
+
+**Packaging for Chrome Web Store:**
+```bash
+make package
+```
+
+This creates a properly packaged `.zip` file with the correct version number and all documentation files excluded.
 
 ### Key Functions
 
@@ -197,27 +227,15 @@ Current version: **1.0.0**
 
 ## License
 
-MIT License
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+**What this means:**
+- ✅ You can use, modify, and distribute this extension
+- ✅ Any derivative works must also be open source under GPL v3
+- ✅ This ensures the extension remains privacy-respecting forever
+- ✅ No one can take this code and make it proprietary with tracking
 
 Copyright (c) 2025 Kerry Jones
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
 ## Support
 

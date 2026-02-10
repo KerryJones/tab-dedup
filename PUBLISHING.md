@@ -181,89 +181,110 @@ English (United States)
 
 ## Privacy Policy
 
-**Required for Chrome Web Store**. Use the template below:
+**Required for Chrome Web Store**. A complete privacy policy has been created in `PRIVACY.md`.
 
+### How to Link to Privacy Policy in Chrome Web Store
+
+You have **three options** for providing the privacy policy URL:
+
+#### Option 1: Link Directly to GitHub File (Recommended)
 ```
-Privacy Policy for Tab Dedup
-
-Last updated: [DATE]
-
-OVERVIEW
-
-Tab Dedup is committed to protecting your privacy. This extension does not collect, store, or transmit any personal data to external servers.
-
-DATA COLLECTION
-
-Tab Dedup does NOT collect:
-• Browsing history
-• Personal information
-• Usage statistics
-• Analytics data
-• Any form of telemetry
-
-DATA STORAGE
-
-The only data stored by Tab Dedup is your configuration settings:
-• Domain aliases (if you configure them)
-• Disallow list (if you configure it)
-• Debug mode preference
-
-This configuration data is stored locally using Chrome's built-in sync storage API. If you are signed into Chrome with sync enabled, these settings will sync across your devices using Google's secure sync infrastructure. Tab Dedup does not access or control this sync mechanism.
-
-PERMISSIONS
-
-Tab Dedup requires the following permissions:
-
-• "tabs": To detect duplicate tabs and switch between them
-• "webNavigation": To intercept new tab navigations
-• "storage": To save your configuration settings locally
-
-These permissions are used solely for the extension's core functionality.
-
-THIRD-PARTY SERVICES
-
-Tab Dedup does NOT use any third-party services, analytics, or tracking tools.
-
-OPEN SOURCE
-
-The complete source code is available on GitHub for inspection:
-https://github.com/kerryjones/tab-dedup
-
-CHANGES TO THIS POLICY
-
-Any changes to this privacy policy will be posted on GitHub and in the Chrome Web Store listing.
-
-CONTACT
-
-For privacy concerns or questions, please open an issue on GitHub:
-https://github.com/kerryjones/tab-dedup/issues
+https://github.com/kerryjones/tab-dedup/blob/main/PRIVACY.md
 ```
 
-Host this privacy policy at a public URL (e.g., GitHub Pages or in the repository README) and provide the URL in the Chrome Web Store Developer Dashboard.
+**Pros:**
+- ✅ Simple and direct
+- ✅ No extra setup needed
+- ✅ Automatically stays in sync with your repo
+- ✅ Chrome Web Store accepts GitHub links
+
+**Cons:**
+- ❌ Shows GitHub UI (but this is fine)
+
+#### Option 2: Use GitHub Raw Link
+```
+https://raw.githubusercontent.com/kerryjones/tab-dedup/main/PRIVACY.md
+```
+
+**Pros:**
+- ✅ Shows just the markdown text
+- ✅ No GitHub UI
+
+**Cons:**
+- ❌ Harder to read (not rendered)
+- ❌ Less professional looking
+
+#### Option 3: GitHub Pages (Optional)
+If you want a prettier URL like `https://kerryjones.github.io/tab-dedup/privacy`:
+1. Enable GitHub Pages in repo settings
+2. Create a `docs/` folder with HTML version
+3. More work, but looks more professional
+
+**Recommendation**: Use **Option 1** (direct GitHub link). It's accepted by Chrome Web Store, requires zero extra work, and looks professional enough.
 
 ## Packaging the Extension
 
-### Create a ZIP file
+### Option 1: Using Make (Recommended)
+
+The project includes a Makefile for easy, consistent packaging:
 
 ```bash
 cd /Users/kerryjones/code/tab-dedup
-zip -r tab-dedup-v1.0.0.zip . -x "*.git*" "*.DS_Store" "node_modules/*" "PUBLISHING.md" "*.zip"
+make package
 ```
 
-**Files to include**:
-- `manifest.json`
-- `background.js`
-- `options.html`, `options.css`, `options.js`
-- `chooser/` directory (all files)
-- `icons/` directory (all PNG files)
-- `README.md` (optional, but good practice)
+This will:
+- ✅ Automatically use the version from manifest.json
+- ✅ Validate manifest.json syntax
+- ✅ Check that all required icons are present
+- ✅ Exclude all documentation/development files correctly
+- ✅ Show package contents and size
+- ✅ Create `tab-dedup-v1.0.0.zip` (or current version)
 
-**Files to exclude**:
-- `.git/` and `.gitignore`
-- `.DS_Store`
-- `PUBLISHING.md`
-- `*.zip` files
-- Development/test files
+**Other useful commands:**
+```bash
+make help      # Show all available commands
+make validate  # Just validate manifest and check icons
+make clean     # Remove all .zip files
+make version   # Show current version
+```
+
+### Option 2: Manual ZIP (if Make not available)
+
+```bash
+cd /Users/kerryjones/code/tab-dedup
+zip -r tab-dedup-v1.0.0.zip . \
+  -x "*.git*" \
+  -x "*.DS_Store" \
+  -x "node_modules/*" \
+  -x "Makefile" \
+  -x "PUBLISHING.md" \
+  -x "CLAUDE.md" \
+  -x "PRIVACY.md" \
+  -x "screenshots/*" \
+  -x "icons/ICON_REQUIREMENTS.md" \
+  -x "*.zip"
+```
+
+**Files to include** (required):
+- `manifest.json` ✅
+- `background.js` ✅
+- `options.html`, `options.css`, `options.js` ✅
+- `chooser/` directory (all files) ✅
+- `icons/` directory (*.png files only) ✅
+- `LICENSE` ✅ (required by GPL v3)
+- `README.md` ✅ (optional, but good practice)
+
+**Files to exclude** (documentation/development only):
+- `.git/` and `.gitignore` ❌
+- `.DS_Store` ❌
+- `PUBLISHING.md` ❌ (publishing guide - not for users)
+- `CLAUDE.md` ❌ (AI development guide - not for users)
+- `PRIVACY.md` ❌ (hosted on GitHub, linked from Web Store)
+- `screenshots/` ❌ (uploaded separately to Web Store)
+- `icons/ICON_REQUIREMENTS.md` ❌ (development docs)
+- `*.zip` files ❌
+- `node_modules/` ❌ (if present)
 
 ## Chrome Web Store Submission Steps
 
