@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Node modules (if build tools are added later)
+node_modules/
+
+# Extension packages
+*.zip
+*.crx
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

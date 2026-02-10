@@ -4,21 +4,31 @@ const newTabs = new Set();
 // Configuration loaded from storage
 let config = {
   domainAliases: {},
-  disallowDomains: []
+  disallowDomains: [],
+  debugMode: false
 };
 
-// Load configuration from storage
+/**
+ * Load configuration from Chrome sync storage
+ * Sets defaults for any missing config values
+ */
 async function loadConfig() {
   const DEFAULT_CONFIG = {
-    domainAliases: {
-      'gmail.com': 'mail.google.com'
-    },
-    disallowDomains: ['google.com']
+    domainAliases: {},
+    disallowDomains: [],
+    debugMode: false
   };
 
-  const result = await chrome.storage.sync.get(DEFAULT_CONFIG);
-  config = result;
-  console.log('[Tab Dedup] Config loaded:', config);
+  try {
+    const result = await chrome.storage.sync.get(DEFAULT_CONFIG);
+    config = result;
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Config loaded:', config);
+    }
+  } catch (error) {
+    console.error('[Tab Dedup] Error loading config:', error);
+    config = DEFAULT_CONFIG;
+  }
 }
 
 // Listen for config changes
@@ -28,11 +38,16 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
+/**
+ * Normalize domain name by removing www prefix and applying domain aliases
+ * @param {string} hostname - The hostname to normalize
+ * @returns {string} The normalized/canonical domain name
+ */
 function normalizeDomain(hostname) {
   let normalized = hostname.replace(/^www\./, "").toLowerCase();
   // Apply domain aliases from config
   const canonical = config.domainAliases[normalized] || normalized;
-  if (canonical !== normalized) {
+  if (canonical !== normalized && config.debugMode) {
     console.log('[Tab Dedup] Domain alias:', normalized, '→', canonical);
   }
   return canonical;
@@ -44,7 +59,9 @@ loadConfig();
 // Track newly created tabs
 chrome.tabs.onCreated.addListener((tab) => {
   newTabs.add(tab.id);
-  console.log('[Tab Dedup] New tab created:', tab.id);
+  if (config.debugMode) {
+    console.log('[Tab Dedup] New tab created:', tab.id);
+  }
 });
 
 // Clean up when tabs are removed
@@ -53,31 +70,43 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   allowedTabs.delete(tabId);
 });
 
+/**
+ * Main navigation interceptor - detects duplicate tabs and shows chooser
+ * Flow: new tab created → user navigates → check for existing tabs → show chooser or allow
+ */
 chrome.webNavigation.onBeforeNavigate.addListener(
   async (details) => {
-    console.log('[Tab Dedup] onBeforeNavigate fired', {
-      url: details.url,
-      tabId: details.tabId,
-      frameId: details.frameId
-    });
+    if (config.debugMode) {
+      console.log('[Tab Dedup] onBeforeNavigate fired', {
+        url: details.url,
+        tabId: details.tabId,
+        frameId: details.frameId
+      });
+    }
 
     if (details.frameId !== 0) return;
 
     const tabId = details.tabId;
 
     if (allowedTabs.has(tabId)) {
-      console.log('[Tab Dedup] Tab in allowedTabs, skipping');
+      if (config.debugMode) {
+        console.log('[Tab Dedup] Tab in allowedTabs, skipping');
+      }
       allowedTabs.delete(tabId);
       newTabs.delete(tabId);
       return;
     }
 
     if (!newTabs.has(tabId)) {
-      console.log('[Tab Dedup] Not a new tab, skipping');
+      if (config.debugMode) {
+        console.log('[Tab Dedup] Not a new tab, skipping');
+      }
       return;
     }
 
-    console.log('[Tab Dedup] This is a new tab navigation');
+    if (config.debugMode) {
+      console.log('[Tab Dedup] This is a new tab navigation');
+    }
 
     let targetUrl;
     try {
@@ -91,16 +120,28 @@ chrome.webNavigation.onBeforeNavigate.addListener(
     }
 
     const targetDomain = normalizeDomain(targetUrl.hostname);
-    console.log('[Tab Dedup] Target domain:', targetDomain);
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Target domain:', targetDomain);
+    }
 
     // Check if domain is in disallow list
     if (config.disallowDomains.includes(targetDomain)) {
-      console.log('[Tab Dedup] Domain in disallow list, allowing navigation');
+      if (config.debugMode) {
+        console.log('[Tab Dedup] Domain in disallow list, allowing navigation');
+      }
       newTabs.delete(tabId);
       return;
     }
 
-    const allTabs = await chrome.tabs.query({});
+    let allTabs;
+    try {
+      allTabs = await chrome.tabs.query({});
+    } catch (error) {
+      console.error('[Tab Dedup] Error querying tabs:', error);
+      newTabs.delete(tabId);
+      return;
+    }
+
     const matches = allTabs.filter((t) => {
       if (t.id === tabId) return false;
       try {
@@ -111,7 +152,9 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       }
     });
 
-    console.log('[Tab Dedup] Found', matches.length, 'matching tabs');
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Found', matches.length, 'matching tabs');
+    }
 
     if (matches.length === 0) {
       // No matches, allow this navigation and mark tab as no longer new
@@ -135,7 +178,9 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       `chooser/chooser.html?${params.toString()}`
     );
 
-    console.log('[Tab Dedup] Redirecting to chooser:', chooserUrl);
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Redirecting to chooser:', chooserUrl);
+    }
 
     // Mark tab as no longer new to prevent intercepting chooser page navigations
     newTabs.delete(tabId);
@@ -146,22 +191,34 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 );
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('[Tab Dedup] Message received:', message.type);
+  if (config.debugMode) {
+    console.log('[Tab Dedup] Message received:', message.type);
+  }
 
   if (message.type === "allowTab") {
     allowedTabs.add(message.tabId);
-    console.log('[Tab Dedup] Added tab', message.tabId, 'to allowedTabs');
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Added tab', message.tabId, 'to allowedTabs');
+    }
     sendResponse({ ok: true });
   } else if (message.type === "switchToTab") {
-    console.log('[Tab Dedup] Switching to tab', message.targetTabId, 'in window', message.windowId);
+    if (config.debugMode) {
+      console.log('[Tab Dedup] Switching to tab', message.targetTabId, 'in window', message.windowId);
+    }
     (async () => {
       try {
         await chrome.tabs.update(message.targetTabId, { active: true });
-        console.log('[Tab Dedup] Activated tab', message.targetTabId);
+        if (config.debugMode) {
+          console.log('[Tab Dedup] Activated tab', message.targetTabId);
+        }
         await chrome.windows.update(message.windowId, { focused: true });
-        console.log('[Tab Dedup] Focused window', message.windowId);
+        if (config.debugMode) {
+          console.log('[Tab Dedup] Focused window', message.windowId);
+        }
         await chrome.tabs.remove(message.senderTabId);
-        console.log('[Tab Dedup] Removed sender tab', message.senderTabId);
+        if (config.debugMode) {
+          console.log('[Tab Dedup] Removed sender tab', message.senderTabId);
+        }
         sendResponse({ ok: true });
       } catch (error) {
         console.error('[Tab Dedup] Error switching tabs:', error);

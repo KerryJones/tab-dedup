@@ -1,9 +1,30 @@
 const params = new URLSearchParams(window.location.search);
 const targetUrl = params.get("target");
-const matches = JSON.parse(params.get("matches") || "[]");
+let matches = [];
+try {
+  matches = JSON.parse(params.get("matches") || "[]");
+  if (!Array.isArray(matches)) {
+    console.error('[Chooser] Invalid matches data, expected array');
+    matches = [];
+  }
+} catch (error) {
+  console.error('[Chooser] Error parsing matches:', error);
+  matches = [];
+}
 
 let selectedIndex = 0;
 const options = [];
+
+// Load debug mode setting from storage
+let debugMode = false;
+(async () => {
+  try {
+    const result = await chrome.storage.sync.get({ debugMode: false });
+    debugMode = result.debugMode;
+  } catch (error) {
+    console.error('[Chooser] Error loading debug mode setting:', error);
+  }
+})();
 
 function render() {
   const list = document.getElementById("options");
@@ -55,14 +76,29 @@ function updateSelection() {
   options[selectedIndex].el.scrollIntoView({ block: "nearest" });
 }
 
+/**
+ * Handle user confirmation of selection
+ * Switches to existing tab or opens new tab based on selection
+ */
 async function confirm() {
   const selected = options[selectedIndex];
-  console.log('[Chooser] Confirming selection:', selected.type);
+
+  // Validate targetUrl before proceeding
+  if (!targetUrl) {
+    console.error('[Chooser] No target URL available');
+    return;
+  }
+
+  if (debugMode) {
+    console.log('[Chooser] Confirming selection:', selected.type);
+  }
 
   if (selected.type === "switch") {
     try {
       const currentTab = await chrome.tabs.getCurrent();
-      console.log('[Chooser] Switching to tab', selected.match.id, 'from tab', currentTab.id);
+      if (debugMode) {
+        console.log('[Chooser] Switching to tab', selected.match.id, 'from tab', currentTab.id);
+      }
 
       const response = await chrome.runtime.sendMessage({
         type: "switchToTab",
@@ -71,7 +107,9 @@ async function confirm() {
         senderTabId: currentTab.id,
       });
 
-      console.log('[Chooser] Switch response:', response);
+      if (debugMode) {
+        console.log('[Chooser] Switch response:', response);
+      }
 
       if (!response || !response.ok) {
         console.error('[Chooser] Tab switch failed, navigating normally');
@@ -84,14 +122,18 @@ async function confirm() {
   } else {
     try {
       const currentTab = await chrome.tabs.getCurrent();
-      console.log('[Chooser] Opening new tab for', targetUrl);
+      if (debugMode) {
+        console.log('[Chooser] Opening new tab for', targetUrl);
+      }
 
       await chrome.runtime.sendMessage({
         type: "allowTab",
         tabId: currentTab.id,
       });
 
-      console.log('[Chooser] Navigating to', targetUrl);
+      if (debugMode) {
+        console.log('[Chooser] Navigating to', targetUrl);
+      }
       window.location.href = targetUrl;
     } catch (error) {
       console.error('[Chooser] Error in open new:', error);

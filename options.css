@@ -116,3 +116,27 @@ button {
 #status.error {
   color: #d93025;
 }
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #202124;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group .description {
+  margin-left: 24px;
+  margin-bottom: 0;
+}
