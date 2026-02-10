@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Dedup",
+  "version": "1.0",
+  "description": "Intercepts duplicate tab navigations and offers to switch to existing tabs instead.",
+  "permissions": ["tabs", "webNavigation"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["chooser/chooser.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
