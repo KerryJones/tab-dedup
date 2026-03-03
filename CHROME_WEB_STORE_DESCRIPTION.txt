@@ -1,0 +1,103 @@
+CHROME WEB STORE LISTING
+========================
+
+CATEGORY: Productivity
+
+
+SUMMARY (132 chars max):
+========================
+Stop opening duplicate tabs. Automatically detects duplicates and switches to existing tabs with keyboard shortcuts.
+
+
+DETAILED DESCRIPTION:
+=====================
+
+Tab Dedup helps you manage your tabs by automatically detecting when you're about to open a duplicate. Instead of creating another tab for the same website, it shows you a clean interface where you can:
+
+• Switch to an existing tab with one keypress
+• See all matching tabs across all windows
+• Open a new tab anyway if you really need it
+
+KEY FEATURES
+
+⌨️ Full Keyboard Support
+Navigate with arrow keys, confirm with Enter, cancel with Esc. Fast and efficient.
+
+🎯 Smart Domain Matching
+Configure domain aliases to handle redirects (e.g., gmail.com → mail.google.com)
+
+🚫 Disallow List
+Exclude domains where you want multiple tabs (like search engines or localhost)
+
+🔒 Privacy First
+No tracking, no telemetry, no external servers. All processing happens locally.
+
+☁️ Chrome Sync
+Settings sync across all your Chrome devices automatically
+
+🐛 Debug Mode
+Optional detailed logging for troubleshooting and bug reports
+
+HOW IT WORKS
+
+1. You open a new tab and start typing a URL
+2. Tab Dedup checks if any existing tabs match that domain
+3. If matches are found, you see a chooser interface
+4. Select an existing tab to switch to it, or choose "Open new tab"
+5. That's it! No manual searching through dozens of tabs
+
+PERFECT FOR
+
+• Developers who work with multiple documentation sites
+• Researchers who open many reference pages
+• Anyone with 20+ tabs open at any given time
+• Power users who want better tab management
+
+CONFIGURATION
+
+The extension works great out of the box, but you can customize it:
+
+• Domain Aliases: Map redirecting domains to their canonical form
+• Disallow List: Exclude specific domains from duplicate detection
+• Debug Mode: Enable detailed console logging for troubleshooting
+
+All settings sync via Chrome's built-in sync, so you only configure once.
+
+PRIVACY & SECURITY
+
+Tab Dedup respects your privacy:
+✓ No data collection
+✓ No external servers
+✓ No tracking or analytics
+✓ Open source on GitHub
+✓ Only stores your configuration locally
+
+TECHNICAL DETAILS
+
+• Built with Manifest V3 (Chrome's modern extension architecture)
+• Lightweight and fast
+• Full keyboard navigation
+• Works across all Chrome windows
+• Settings sync via Chrome Sync
+
+SUPPORT
+
+Found a bug? Have a suggestion?
+Visit the GitHub repository: https://github.com/kerryjones/tab-dedup
+
+This extension is open source under GNU GPL v3, ensuring it stays free and privacy-respecting forever.
+
+
+PRIVACY POLICY URL:
+===================
+https://github.com/kerryjones/tab-dedup/blob/main/PRIVACY.md
+
+
+HOMEPAGE URL:
+=============
+https://github.com/kerryjones/tab-dedup
+
+
+SUPPORT URL:
+============
+https://github.com/kerryjones/tab-dedup/issues

@@ -22,6 +22,16 @@ async function loadConfig() {
   try {
     const result = await chrome.storage.sync.get(DEFAULT_CONFIG);
     config = result;
+    // Normalize stored domains to match how hostnames are normalized at runtime,
+    // in case entries were saved before normalization was enforced in options.js
+    config.disallowDomains = config.disallowDomains.map(
+      d => d.replace(/^www\./, '').toLowerCase().trim()
+    );
+    config.domainAliases = Object.fromEntries(
+      Object.entries(config.domainAliases).map(
+        ([k, v]) => [k.replace(/^www\./, '').toLowerCase().trim(), v.replace(/^www\./, '').toLowerCase().trim()]
+      )
+    );
     if (config.debugMode) {
       console.log('[Tab Dedup] Config loaded:', config);
     }
@@ -53,8 +63,8 @@ function normalizeDomain(hostname) {
   return canonical;
 }
 
-// Initialize config on startup
-loadConfig();
+// Initialize config on startup - store promise so navigation handler can await it
+const configReady = loadConfig();
 
 // Track newly created tabs
 chrome.tabs.onCreated.addListener((tab) => {
@@ -76,6 +86,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
  */
 chrome.webNavigation.onBeforeNavigate.addListener(
   async (details) => {
+    // Wait for config to load - handles race condition on service worker restart
+    await configReady;
+
     if (config.debugMode) {
       console.log('[Tab Dedup] onBeforeNavigate fired', {
         url: details.url,

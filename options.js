@@ -50,7 +50,10 @@ function parseDomainAliases(text) {
       continue;
     }
 
-    aliases[source] = dest;
+    // Normalize to match how background.js normalizes hostnames
+    const normalizedSource = source.replace(/^www\./, '').toLowerCase();
+    const normalizedDest = dest.replace(/^www\./, '').toLowerCase();
+    aliases[normalizedSource] = normalizedDest;
   }
 
   return { aliases, errors };
@@ -84,7 +87,8 @@ function parseDisallowDomains(text) {
       continue;
     }
 
-    domains.push(domain);
+    // Normalize to match how background.js normalizes hostnames
+    domains.push(domain.replace(/^www\./, '').toLowerCase());
   }
 
   return { domains, errors };
